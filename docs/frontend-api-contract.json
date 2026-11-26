@@ -1,0 +1,218 @@
+{
+  "serviceName": "User Service",
+  "project": "Pre-Loved Marketplace",
+  "baseUrl": "http://localhost:3001",
+  "apiPrefix": "/api/v1",
+  "headers": {
+    "standard": {
+      "Content-Type": "application/json"
+    },
+    "authenticated": {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer <ACCESS_TOKEN>"
+    }
+  },
+  "responseStandard": {
+    "success": {
+      "success": true,
+      "message": "Deskripsi status sukses",
+      "data": {}
+    },
+    "error": {
+      "success": false,
+      "message": "Pesan error untuk ditampilkan kepada user",
+      "errors": []
+    }
+  },
+  "endpoints": [
+    {
+      "name": "Register",
+      "description": "Mendaftarkan user baru ke platform.",
+      "method": "POST",
+      "url": "/api/v1/auth/register",
+      "authRequired": false,
+      "body": {
+        "username": "windar",
+        "email": "windar@example.com",
+        "password": "Password123!",
+        "fullName": "Windar Wening"
+      },
+      "responseExample": {
+        "status": 201,
+        "body": {
+          "success": true,
+          "message": "Registrasi berhasil",
+          "data": {
+            "user": {
+              "id": "c620459c-6a69-4f70-a3bc-2dfdfc3bfdb3",
+              "username": "windar",
+              "email": "windar@example.com",
+              "role": "USER",
+              "isActive": true,
+              "createdAt": "2026-11-26T06:00:00.000Z",
+              "profile": {
+                "id": "78083818-a6e5-4a6c-b472-ee1ca46f6ee9",
+                "fullName": "Windar Wening",
+                "phoneNumber": null,
+                "profilePicture": null,
+                "bio": null,
+                "address": null
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "description": "Login dengan username atau email untuk mendapatkan access token (15m) dan refresh token (7d).",
+      "method": "POST",
+      "url": "/api/v1/auth/login",
+      "authRequired": false,
+      "body": {
+        "identifier": "windar",
+        "password": "Password123!"
+      },
+      "responseExample": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Login berhasil",
+          "data": {
+            "user": {
+              "id": "c620459c-6a69-4f70-a3bc-2dfdfc3bfdb3",
+              "username": "windar",
+              "email": "windar@example.com",
+              "role": "USER"
+            },
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      }
+    },
+    {
+      "name": "Refresh Token",
+      "description": "Menukar refresh token lama dengan pasangan token baru saat access token kedaluwarsa (401).",
+      "method": "POST",
+      "url": "/api/v1/auth/refresh",
+      "authRequired": false,
+      "body": {
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      },
+      "responseExample": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Refresh token berhasil",
+          "data": {
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.new...",
+            "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.new..."
+          }
+        }
+      }
+    },
+    {
+      "name": "Logout",
+      "description": "Mencabut sesi login saat ini di server.",
+      "method": "POST",
+      "url": "/api/v1/auth/logout",
+      "authRequired": true,
+      "body": null,
+      "responseExample": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Logout berhasil"
+        }
+      }
+    },
+    {
+      "name": "Get My Profile",
+      "description": "Mengambil data akun dan detail profil user yang sedang login.",
+      "method": "GET",
+      "url": "/api/v1/users/me",
+      "authRequired": true,
+      "body": null,
+      "responseExample": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Berhasil mengambil profil pengguna",
+          "data": {
+            "user": {
+              "id": "c620459c-6a69-4f70-a3bc-2dfdfc3bfdb3",
+              "username": "windar",
+              "email": "windar@example.com",
+              "role": "USER",
+              "isActive": true,
+              "createdAt": "2026-11-26T06:00:00.000Z",
+              "updatedAt": "2026-11-26T06:00:00.000Z",
+              "profile": {
+                "id": "78083818-a6e5-4a6c-b472-ee1ca46f6ee9",
+                "fullName": "Windar Wening",
+                "phoneNumber": "081234567890",
+                "profilePicture": "https://cdn.preloved.com/avatars/user-1.jpg",
+                "bio": "Penggemar barang vintage dan preloved berkualitas.",
+                "address": "Surakarta, Jawa Tengah",
+                "createdAt": "2026-11-26T06:00:00.000Z",
+                "updatedAt": "2026-11-26T06:00:00.000Z"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Update My Profile",
+      "description": "Mengubah data profil (hanya field yang dikirim yang akan diperbarui).",
+      "method": "PATCH",
+      "url": "/api/v1/users/me",
+      "authRequired": true,
+      "body": {
+        "fullName": "Windar Wening Updated",
+        "phoneNumber": "081234567890",
+        "bio": "Penjual terpercaya barang pre-loved",
+        "address": "Surakarta, Jawa Tengah",
+        "profilePicture": "https://cdn.preloved.com/avatars/user-1.jpg"
+      },
+      "responseExample": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Profil berhasil diperbarui",
+          "data": {
+            "profile": {
+              "id": "78083818-a6e5-4a6c-b472-ee1ca46f6ee9",
+              "userId": "c620459c-6a69-4f70-a3bc-2dfdfc3bfdb3",
+              "fullName": "Windar Wening Updated",
+              "phoneNumber": "081234567890",
+              "profilePicture": "https://cdn.preloved.com/avatars/user-1.jpg",
+              "bio": "Penjual terpercaya barang pre-loved",
+              "address": "Surakarta, Jawa Tengah",
+              "updatedAt": "2026-11-26T06:05:00.000Z"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Change Password",
+      "description": "Mengubah password akun dan mencabut semua sesi login aktif lainnya.",
+      "method": "PATCH",
+      "url": "/api/v1/users/me/password",
+      "authRequired": true,
+      "body": {
+        "currentPassword": "Password123!",
+        "newPassword": "NewPassword123!"
+      },
+      "responseExample": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Password berhasil diubah. Sesi lain telah dicabut."
+        }
+      }
+    }
+  ]
+}

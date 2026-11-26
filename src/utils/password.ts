@@ -1,0 +1,15 @@
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import { env } from '../config/env';
+
+export const hashPassword = async (password: string): Promise<string> => {
+  return bcrypt.hash(password, env.BCRYPT_SALT_ROUNDS);
+};
+
+export const comparePassword = async (password: string, hash: string): Promise<boolean> => {
+  return bcrypt.compare(password, hash);
+};
+
+export const hashToken = (token: string): string => {
+  return crypto.createHash('sha256').update(token).digest('hex');
+};

@@ -1,0 +1,423 @@
+export const swaggerDocument = {
+  openapi: '3.0.3',
+  info: {
+    title: 'Pre-Loved Marketplace - User Service API',
+    version: '1.0.0',
+    description: `
+REST API User Service untuk platform Pre-Loved Marketplace (Jual beli barang bekas layak pakai).
+Layanan ini bertanggung jawab penuh atas:
+- Registrasi pengguna (Users & User Profiles atomik)
+- Autentikasi JWT (Access Token & Refresh Token)
+- Refresh token rotation & sesi kedaluwarsa/pencabutan
+- Pengelolaan profil pengguna
+- Pengubahan password & pencabutan sesi aktif lainnya
+- API internal antar-microservice dengan shared secret authentication
+
+### Format Response Standard
+Semua response API mengembalikan JSON berformat:
+\`\`\`json
+{
+  "success": true,
+  "message": "Deskripsi status",
+  "data": { ... }
+}
+\`\`\`
+`,
+    contact: {
+      name: 'Backend Engineering Team',
+      email: 'dev@preloved-marketplace.internal',
+    },
+  },
+  servers: [
+    {
+      url: 'http://localhost:3001',
+      description: 'Local Development Server',
+    },
+  ],
+  components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Masukkan JWT Access Token dengan format: Bearer <token>',
+      },
+      InternalServiceSecret: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'X-Internal-Secret',
+        description: 'Shared Secret Header khusus komunikasi antar-microservice',
+      },
+    },
+    schemas: {
+      StandardSuccessResponse: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', example: true },
+          message: { type: 'string', example: 'Operasi berhasil' },
+          data: { type: 'object' },
+        },
+      },
+      StandardErrorResponse: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', example: false },
+          message: { type: 'string', example: 'Pesan kesalahan yang deskriptif' },
+          errors: {
+            nullable: true,
+            example: null,
+          },
+        },
+      },
+      RegisterRequest: {
+        type: 'object',
+        required: ['username', 'email', 'password', 'fullName'],
+        properties: {
+          username: {
+            type: 'string',
+            minLength: 3,
+            maxLength: 30,
+            example: 'windar',
+            description: 'Username unik (hanya huruf, angka, underscore)',
+          },
+          email: {
+            type: 'string',
+            format: 'email',
+            example: 'windar@example.com',
+            description: 'Email pengguna yang unik',
+          },
+          password: {
+            type: 'string',
+            minLength: 8,
+            example: 'Password123!',
+            description: 'Password pengguna minimal 8 karakter',
+          },
+          fullName: {
+            type: 'string',
+            minLength: 2,
+            maxLength: 100,
+            example: 'Windar Wening',
+            description: 'Nama lengkap pengguna',
+          },
+        },
+      },
+      LoginRequest: {
+        type: 'object',
+        required: ['identifier', 'password'],
+        properties: {
+          identifier: {
+            type: 'string',
+            example: 'windar',
+            description: 'Username atau email pengguna',
+          },
+          password: {
+            type: 'string',
+            example: 'Password123!',
+            description: 'Password akun',
+          },
+        },
+      },
+      RefreshTokenRequest: {
+        type: 'object',
+        required: ['refreshToken'],
+        properties: {
+          refreshToken: {
+            type: 'string',
+            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            description: 'Refresh token yang masih valid',
+          },
+        },
+      },
+      UpdateProfileRequest: {
+        type: 'object',
+        properties: {
+          fullName: { type: 'string', minLength: 2, maxLength: 100, example: 'Windar Wening' },
+          phoneNumber: { type: 'string', example: '081234567890' },
+          bio: { type: 'string', example: 'Pengguna Pre-Loved Marketplace' },
+          address: { type: 'string', example: 'Surakarta' },
+          profilePicture: {
+            type: 'string',
+            format: 'uri',
+            example: 'https://cdn.preloved.com/avatars/user-1.jpg',
+          },
+        },
+      },
+      ChangePasswordRequest: {
+        type: 'object',
+        required: ['currentPassword', 'newPassword'],
+        properties: {
+          currentPassword: {
+            type: 'string',
+            example: 'Password123!',
+            description: 'Password pengguna saat ini',
+          },
+          newPassword: {
+            type: 'string',
+            minLength: 8,
+            example: 'NewPassword123!',
+            description: 'Password baru minimal 8 karakter',
+          },
+        },
+      },
+    },
+  },
+  paths: {
+    '/api/v1/auth/register': {
+      post: {
+        tags: ['Authentication'],
+        summary: 'Registrasi Akun Pengguna Baru',
+        description:
+          'Mendaftarkan pengguna baru ke platform. Membuat record di tabel users dan user_profiles secara atomik menggunakan database transaction. Password di-hash menggunakan bcrypt.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/RegisterRequest' },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Registrasi berhasil',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardSuccessResponse' },
+              },
+            },
+          },
+          400: {
+            description: 'Validasi input gagal',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardErrorResponse' },
+              },
+            },
+          },
+          409: {
+            description: 'Username atau email sudah digunakan',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardErrorResponse' },
+              },
+            },
+          },
+          429: {
+            description: 'Terlalu banyak permintaan (rate limited)',
+          },
+        },
+      },
+    },
+    '/api/v1/auth/login': {
+      post: {
+        tags: ['Authentication'],
+        summary: 'Login Pengguna',
+        description:
+          'Mengautentikasi pengguna menggunakan username atau email. Menghasilkan Access Token (15m) dan Refresh Token (7d). Hash dari refresh token disimpan di tabel auth_sessions.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/LoginRequest' },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Login berhasil dan token dikembalikan',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardSuccessResponse' },
+              },
+            },
+          },
+          401: {
+            description: 'Identifier atau password salah',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardErrorResponse' },
+              },
+            },
+          },
+          403: {
+            description: 'Akun dinonaktifkan',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardErrorResponse' },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/v1/auth/logout': {
+      post: {
+        tags: ['Authentication'],
+        summary: 'Logout Pengguna',
+        security: [{ BearerAuth: [] }],
+        description:
+          'Mencabut sesi autentikasi pengguna yang sedang aktif (revoked_at di-update). Sesi yang dicabut tidak dapat digunakan lagi.',
+        responses: {
+          200: {
+            description: 'Logout berhasil',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardSuccessResponse' },
+              },
+            },
+          },
+          401: {
+            description: 'Tidak terautentikasi atau token tidak valid',
+          },
+        },
+      },
+    },
+    '/api/v1/auth/refresh': {
+      post: {
+        tags: ['Authentication'],
+        summary: 'Refresh Access Token (Rotation)',
+        description:
+          'Menukar refresh token yang valid dengan pasangan access token & refresh token baru (Refresh Token Rotation). Sesi lama dicabut secara otomatis.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/RefreshTokenRequest' },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Token baru berhasil dihasilkan',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardSuccessResponse' },
+              },
+            },
+          },
+          401: {
+            description: 'Refresh token tidak valid, kedaluwarsa, atau telah dicabut',
+          },
+        },
+      },
+    },
+    '/api/v1/users/me': {
+      get: {
+        tags: ['User Profile'],
+        summary: 'Ambil Profil Pengguna Saat Ini',
+        security: [{ BearerAuth: [] }],
+        description: 'Mengambil data akun dan profil pengguna yang sedang login.',
+        responses: {
+          200: {
+            description: 'Profil berhasil diambil',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardSuccessResponse' },
+              },
+            },
+          },
+          401: {
+            description: 'Tidak terautentikasi',
+          },
+        },
+      },
+      patch: {
+        tags: ['User Profile'],
+        summary: 'Perbarui Profil Pengguna',
+        security: [{ BearerAuth: [] }],
+        description:
+          'Memperbarui data profil pengguna yang sedang login (fullName, phoneNumber, bio, address, profilePicture). Mencegah mass assignment.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/UpdateProfileRequest' },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Profil berhasil diperbarui',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardSuccessResponse' },
+              },
+            },
+          },
+          400: {
+            description: 'Validasi input gagal',
+          },
+          401: {
+            description: 'Tidak terautentikasi',
+          },
+        },
+      },
+    },
+    '/api/v1/users/me/password': {
+      patch: {
+        tags: ['User Profile'],
+        summary: 'Ubah Password Pengguna',
+        security: [{ BearerAuth: [] }],
+        description:
+          'Mengubah password pengguna setelah verifikasi password saat ini. Mencabut semua sesi lama lainnya untuk keamanan.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ChangePasswordRequest' },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Password berhasil diubah dan sesi lama dicabut',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardSuccessResponse' },
+              },
+            },
+          },
+          400: {
+            description: 'Password saat ini salah atau input tidak valid',
+          },
+          401: {
+            description: 'Tidak terautentikasi',
+          },
+        },
+      },
+    },
+    '/api/v1/internal/users/{id}': {
+      get: {
+        tags: ['Internal Microservice'],
+        summary: 'Ambil Data Pengguna berdasarkan ID (Internal Service)',
+        security: [{ InternalServiceSecret: [] }],
+        description:
+          'Endpoint khusus integrasi microservice (Product Service, Order Service, Chat Service). Memerlukan shared secret header X-Internal-Secret. Hanya mengembalikan data publik/profil non-sensitif (tanpa password_hash atau token_hash).',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            description: 'UUID pengguna',
+            schema: { type: 'string', format: 'uuid' },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Data pengguna ditemukan',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StandardSuccessResponse' },
+              },
+            },
+          },
+          401: {
+            description: 'Header X-Internal-Secret hilang atau tidak valid',
+          },
+          404: {
+            description: 'Pengguna tidak ditemukan',
+          },
+        },
+      },
+    },
+  },
+};

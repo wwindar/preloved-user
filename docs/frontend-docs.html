@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dokumentasi API User Service - Pre-Loved Marketplace</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    @page {
+      size: A4;
+      margin: 20mm 15mm 20mm 15mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1e293b;
+      line-height: 1.6;
+      font-size: 13px;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+    }
+
+    .cover {
+      page-break-after: always;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 85vh;
+      border-bottom: 3px solid #3b82f6;
+      padding-bottom: 40px;
+    }
+
+    .badge-top {
+      display: inline-block;
+      align-self: flex-start;
+      background: #eff6ff;
+      color: #2563eb;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      margin-bottom: 24px;
+      border: 1px solid #bfdbfe;
+    }
+
+    h1.title {
+      font-size: 32px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.25;
+      margin: 0 0 16px 0;
+    }
+
+    p.subtitle {
+      font-size: 16px;
+      color: #475569;
+      margin: 0 0 32px 0;
+      max-width: 600px;
+    }
+
+    .meta-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      max-width: 640px;
+      margin-top: 20px;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #64748b;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .meta-val {
+      font-size: 14px;
+      color: #0f172a;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+      margin-top: 36px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title span.num {
+      background: #3b82f6;
+      color: white;
+      font-size: 12px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 12px;
+    }
+
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-post { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .badge-get { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-patch { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-auth { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    .badge-no-auth { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin: 10px 0 16px 0;
+      border: 1px solid #1e293b;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11.5px;
+    }
+
+    .endpoint-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+      page-break-inside: avoid;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+
+    .endpoint-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .endpoint-desc {
+      color: #475569;
+      font-size: 12.5px;
+      margin-bottom: 14px;
+    }
+
+    .callout {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 12.5px;
+    }
+
+    .callout.warning {
+      background: #fffbeb;
+      border-left-color: #f59e0b;
+      color: #92400e;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER PAGE -->
+  <div class="cover">
+    <div class="badge-top">Frontend Integration Guide</div>
+    <h1 class="title">Panduan Integrasi REST API<br>User Service</h1>
+    <p class="subtitle">Dokumentasi teknis lengkap khusus Frontend Engineer untuk mengintegrasikan autentikasi, refresh token rotation, profil pengguna, dan penanganan error pada platform Pre-Loved Marketplace.</p>
+
+    <div class="meta-box">
+      <div class="meta-item">
+        <span class="meta-label">Base URL Service</span>
+        <span class="meta-val">http://localhost:3001</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">API Prefix</span>
+        <span class="meta-val">/api/v1</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Format Data</span>
+        <span class="meta-val">JSON (application/json)</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Autentikasi</span>
+        <span class="meta-val">JWT Bearer Token</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Interactive Docs</span>
+        <span class="meta-val">/api-docs (Swagger UI)</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Status Version</span>
+        <span class="meta-val">v1.0.0 (Production-Ready)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: STANDAR KOMUNIKASI -->
+  <div>
+    <div class="section-title">
+      <span class="num">1</span> Standar Komunikasi & Format Response
+    </div>
+    <p>Semua endpoint REST API User Service mengembalikan struktur JSON yang seragam dan konsisten. Frontend developer dapat membuat tipe umum (*generic response interface*) di TypeScript.</p>
+
+    <h3>Struktur Response Sukses (2xx)</h3>
+    <pre><code>{
+  "success": true,
+  "message": "Deskripsi status operasi yang berhasil",
+  "data": { ... }
+}</code></pre>
+
+    <h3>Struktur Response Gagal (4xx / 5xx)</h3>
+    <pre><code>{
+  "success": false,
+  "message": "Pesan kesalahan yang deskriptif untuk ditampilkan di UI",
+  "errors": null // atau array detail error jika validasi input gagal
+}</code></pre>
+
+    <h3>Daftar HTTP Status Codes</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 15%;">Kode Status</th>
+          <th style="width: 25%;">Arti</th>
+          <th>Tindakan di Sisi Frontend</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>200 OK</code></td>
+          <td>Permintaan berhasil</td>
+          <td>Perbarui state / render data ke komponen UI.</td>
+        </tr>
+        <tr>
+          <td><code>201 Created</code></td>
+          <td>Resource berhasil dibuat</td>
+          <td>Navigasikan user (misal: redirect ke halaman login atau dashboard).</td>
+        </tr>
+        <tr>
+          <td><code>400 Bad Request</code></td>
+          <td>Validasi input tidak sesuai</td>
+          <td>Tampilkan pesan error validasi di form input terkait.</td>
+        </tr>
+        <tr>
+          <td><code>401 Unauthorized</code></td>
+          <td>Token hilang, kedaluwarsa, atau sesi dicabut</td>
+          <td>Picu alur <strong>Refresh Token</strong> otomatis. Jika gagal, redirect ke halaman login.</td>
+        </tr>
+        <tr>
+          <td><code>403 Forbidden</code></td>
+          <td>Akun dinonaktifkan atau akses ditolak</td>
+          <td>Tampilkan modal/halaman pemberitahuan akun dinonaktifkan.</td>
+        </tr>
+        <tr>
+          <td><code>409 Conflict</code></td>
+          <td>Email atau Username sudah terdaftar</td>
+          <td>Beri tanda merah pada field email atau username di form registrasi.</td>
+        </tr>
+        <tr>
+          <td><code>429 Too Many Requests</code></td>
+          <td>Melebihi rate limit (terlalu banyak hit)</td>
+          <td>Tampilkan pesan: "Terlalu banyak permintaan, coba lagi beberapa saat".</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 2: ALUR AUTENTIKASI & TOKEN -->
+  <div class="page-break">
+    <div class="section-title">
+      <span class="num">2</span> Siklus Autentikasi & Refresh Token Rotation
+    </div>
+
+    <p>User Service menerapkan sistem <strong>Dual-Token</strong> dengan keamanan tinggi:</p>
+    <ul>
+      <li><strong>Access Token</strong>: Berumur pendek (<strong>15 menit</strong>). Digunakan pada header setiap request terlindungi.</li>
+      <li><strong>Refresh Token</strong>: Berumur panjang (<strong>7 hari</strong>). Disimpan aman untuk meminta Access Token baru.</li>
+      <li><strong>Refresh Token Rotation</strong>: Setiap kali refresh token digunakan, token lama langsung dicabut dan diganti dengan pasangan token baru. Token lama yang sudah dipakai tidak dapat digunakan kembali.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Rekomendasi Penyimpanan di Frontend:</strong><br>
+      • Simpan <code>accessToken</code> di memory/state aplikasi (atau React context / Zustand / Pinia).<br>
+      • Simpan <code>refreshToken</code> di HttpOnly Cookie (atau Secure LocalStorage / SecureStore jika mobile).
+    </div>
+
+    <h3>Diagram Alur Interceptor Token (Axios / Fetch)</h3>
+    <pre><code>[Frontend Request API]
+         │
+         ├── Header: Authorization: Bearer <accessToken>
+         ▼
+[User Service Backend]
+         │
+    Apakah Token Valid?
+    ├── Ya  ───► [200 OK: Response Sukses]
+    └── Tidak / Expired (401)
+              │
+              ▼
+   [Frontend Interceptor Menangkap 401]
+              │
+              ├── POST /api/v1/auth/refresh { refreshToken }
+              │
+              ├── Sukses: Update accessToken & refreshToken baru ──► Ulangi request awal
+              └── Gagal: Hapus semua sesi ──► Redirect ke /login</code></pre>
+  </div>
+
+  <!-- SECTION 3: DOKUMENTASI ENDPOINT LENGKAP -->
+  <div class="page-break">
+    <div class="section-title">
+      <span class="num">3</span> Referensi Lengkap Endpoint API
+    </div>
+
+    <!-- 1. Register -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="badge badge-post">POST</span>
+        <span class="endpoint-url">/api/v1/auth/register</span>
+        <span class="badge badge-no-auth">No Auth</span>
+      </div>
+      <div class="endpoint-desc">Mendaftarkan akun dan profil pengguna baru secara bersamaan. Password wajib minimal 8 karakter.</div>
+
+      <strong>Request Body:</strong>
+      <pre><code>{
+  "username": "windar",
+  "email": "windar@example.com",
+  "password": "Password123!",
+  "fullName": "Windar Wening"
+}</code></pre>
+
+      <strong>Response Sukses (201 Created):</strong>
+      <pre><code>{
+  "success": true,
+  "message": "Registrasi berhasil",
+  "data": {
+    "user": {
+      "id": "e6a0d241-e9bf-48d6-976b-3eb5989709d7",
+      "username": "windar",
+      "email": "windar@example.com",
+      "role": "USER",
+      "isActive": true,
+      "createdAt": "2026-11-26T06:00:00.000Z",
+      "profile": {
+        "id": "7b0a33cb-9d8a-44e2-8956-65482329bc09",
+        "fullName": "Windar Wening",
+        "phoneNumber": null,
+        "profilePicture": null,
+        "bio": null,
+        "address": null
+      }
+    }
+  }
+}</code></pre>
+    </div>
+
+    <!-- 2. Login -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="badge badge-post">POST</span>
+        <span class="endpoint-url">/api/v1/auth/login</span>
+        <span class="badge badge-no-auth">No Auth</span>
+      </div>
+      <div class="endpoint-desc">Login menggunakan identifier (username ATAU email) dan password. Menghasilkan Access Token dan Refresh Token.</div>
+
+      <strong>Request Body:</strong>
+      <pre><code>{
+  "identifier": "windar", // Bisa berupa username atau email
+  "password": "Password123!"
+}</code></pre>
+
+      <strong>Response Sukses (200 OK):</strong>
+      <pre><code>{
+  "success": true,
+  "message": "Login berhasil",
+  "data": {
+    "user": {
+      "id": "e6a0d241-e9bf-48d6-976b-3eb5989709d7",
+      "username": "windar",
+      "email": "windar@example.com",
+      "role": "USER"
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}</code></pre>
+    </div>
+
+    <!-- 3. Refresh Token -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="badge badge-post">POST</span>
+        <span class="endpoint-url">/api/v1/auth/refresh</span>
+        <span class="badge badge-no-auth">No Auth</span>
+      </div>
+      <div class="endpoint-desc">Menukar refresh token lama dengan access token dan refresh token yang baru (Token Rotation).</div>
+
+      <strong>Request Body:</strong>
+      <pre><code>{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</code></pre>
+
+      <strong>Response Sukses (200 OK):</strong>
+      <pre><code>{
+  "success": true,
+  "message": "Refresh token berhasil",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.new...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.new..."
+  }
+}</code></pre>
+    </div>
+
+    <!-- 4. Logout -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="badge badge-post">POST</span>
+        <span class="endpoint-url">/api/v1/auth/logout</span>
+        <span class="badge badge-auth">Bearer Auth</span>
+      </div>
+      <div class="endpoint-desc">Mencabut sesi autentikasi saat ini di server (revoked_at dicatat). Token yang sudah logout tidak dapat digunakan lagi.</div>
+
+      <strong>Headers:</strong>
+      <pre><code>Authorization: Bearer &lt;ACCESS_TOKEN&gt;</code></pre>
+
+      <strong>Response Sukses (200 OK):</strong>
+      <pre><code>{
+  "success": true,
+  "message": "Logout berhasil"
+}</code></pre>
+    </div>
+
+    <!-- 5. Get Profile -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="badge badge-get">GET</span>
+        <span class="endpoint-url">/api/v1/users/me</span>
+        <span class="badge badge-auth">Bearer Auth</span>
+      </div>
+      <div class="endpoint-desc">Mengambil informasi detail akun dan profil pengguna yang sedang login.</div>
+
+      <strong>Headers:</strong>
+      <pre><code>Authorization: Bearer &lt;ACCESS_TOKEN&gt;</code></pre>
+
+      <strong>Response Sukses (200 OK):</strong>
+      <pre><code>{
+  "success": true,
+  "message": "Berhasil mengambil profil pengguna",
+  "data": {
+    "user": {
+      "id": "e6a0d241-e9bf-48d6-976b-3eb5989709d7",
+      "username": "windar",
+      "email": "windar@example.com",
+      "role": "USER",
+      "isActive": true,
+      "createdAt": "2026-11-26T06:00:00.000Z",
+      "updatedAt": "2026-11-26T06:00:00.000Z",
+      "profile": {
+        "id": "7b0a33cb-9d8a-44e2-8956-65482329bc09",
+        "fullName": "Windar Wening",
+        "phoneNumber": "081234567890",
+        "profilePicture": "https://cdn.preloved.com/avatars/user.jpg",
+        "bio": "Penggemar barang vintage layak pakai.",
+        "address": "Surakarta, Jawa Tengah",
+        "createdAt": "2026-11-26T06:00:00.000Z",
+        "updatedAt": "2026-11-26T06:10:00.000Z"
+      }
+    }
+  }
+}</code></pre>
+    </div>
+
+    <!-- 6. Update Profile -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="badge badge-patch">PATCH</span>
+        <span class="endpoint-url">/api/v1/users/me</span>
+        <span class="badge badge-auth">Bearer Auth</span>
+      </div>
+      <div class="endpoint-desc">Memperbarui informasi profil pengguna. Kirim hanya field yang ingin diubah. Field yang tidak dikirim tidak akan berubah.</div>
+
+      <div class="callout warning">
+        <strong>Perhatian Mass Assignment:</strong> Jangan mengirim field <code>user_id</code>, <code>role</code>, atau <code>email</code>. Server menggunakan validasi ketat dan akan menolak permintaan dengan status 400 Bad Request jika atribut ilegal dikirimkan.
+      </div>
+
+      <strong>Request Body (Semua Field Opsional):</strong>
+      <pre><code>{
+  "fullName": "Windar Wening Updated",
+  "phoneNumber": "081234567890",
+  "bio": "Penjual terpercaya barang pre-loved.",
+  "address": "Surakarta, Jawa Tengah",
+  "profilePicture": "https://cdn.preloved.com/avatars/user.jpg"
+}</code></pre>
+
+      <strong>Response Sukses (200 OK):</strong>
+      <pre><code>{
+  "success": true,
+  "message": "Profil berhasil diperbarui",
+  "data": {
+    "profile": {
+      "id": "7b0a33cb-9d8a-44e2-8956-65482329bc09",
+      "userId": "e6a0d241-e9bf-48d6-976b-3eb5989709d7",
+      "fullName": "Windar Wening Updated",
+      "phoneNumber": "081234567890",
+      "profilePicture": "https://cdn.preloved.com/avatars/user.jpg",
+      "bio": "Penjual terpercaya barang pre-loved.",
+      "address": "Surakarta, Jawa Tengah",
+      "updatedAt": "2026-11-26T06:15:00.000Z"
+    }
+  }
+}</code></pre>
+    </div>
+
+    <!-- 7. Change Password -->
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="badge badge-patch">PATCH</span>
+        <span class="endpoint-url">/api/v1/users/me/password</span>
+        <span class="badge badge-auth">Bearer Auth</span>
+      </div>
+      <div class="endpoint-desc">Mengubah password pengguna. Server akan secara otomatis mencabut sesi login aktif lainnya demi keamanan.</div>
+
+      <strong>Request Body:</strong>
+      <pre><code>{
+  "currentPassword": "Password123!",
+  "newPassword": "NewPassword123!"
+}</code></pre>
+
+      <strong>Response Sukses (200 OK):</strong>
+      <pre><code>{
+  "success": true,
+  "message": "Password berhasil diubah. Sesi lain telah dicabut."
+}</code></pre>
+    </div>
+
+  </div>
+
+  <!-- SECTION 4: CONTOH KODE IMPLEMENTASI FRONTEND -->
+  <div class="page-break">
+    <div class="section-title">
+      <span class="num">4</span> Implementasi Client Frontend (Axios Interceptor)
+    </div>
+
+    <p>Berikut adalah template siap pakai untuk menangani token refresh otomatis pada project Next.js / React / Vue menggunakan Axios:</p>
+
+    <pre><code>import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://localhost:3001/api/v1',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request Interceptor: Menambahkan Bearer Token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Response Interceptor: Menangani Token Expired (401) & Auto Refresh
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Cek jika error 401 dan bukan request login/refresh itu sendiri
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/auth/login') &&
+      !originalRequest.url?.includes('/auth/refresh')
+    ) {
+      originalRequest._retry = true;
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (!refreshToken) {
+        // Redirect ke login jika tidak ada refresh token
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
+
+      try {
+        const { data } = await axios.post('http://localhost:3001/api/v1/auth/refresh', {
+          refreshToken,
+        });
+
+        // Simpan token baru hasil rotasi
+        localStorage.setItem('accessToken', data.data.accessToken);
+        localStorage.setItem('refreshToken', data.data.refreshToken);
+
+        // Ulangi request awal dengan token baru
+        originalRequest.headers.Authorization = `Bearer ${data.data.accessToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        // Sesi telah kedaluwarsa atau dicabut
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default api;</code></pre>
+  </div>
+
+</body>
+</html>
